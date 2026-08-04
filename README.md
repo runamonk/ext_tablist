@@ -1,4 +1,4 @@
-# Current Window Tab List
+# Tab List
 
 A small Manifest V3 extension for Chrome and Edge. Clicking its toolbar button lists only the tabs in the window containing that button.
 
