@@ -1,0 +1,145 @@
+:root {
+  color-scheme: light dark;
+  --background: #ffffff;
+  --foreground: #202124;
+  --muted: #5f6368;
+  --border: #dadce0;
+  --hover: #f1f3f4;
+  --active: #e8f0fe;
+  --active-accent: #1a73e8;
+  --popup-width: 420px;
+  --popup-max-height: 480px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #292a2d;
+    --foreground: #e8eaed;
+    --muted: #9aa0a6;
+    --border: #5f6368;
+    --hover: #35363a;
+    --active: #394457;
+    --active-accent: #8ab4f8;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  width: var(--popup-width);
+  min-width: 280px;
+  max-height: var(--popup-max-height);
+  overflow: hidden;
+  background: var(--background);
+  color: var(--foreground);
+  font: 13px/1.35 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 9px 12px 7px;
+  border-bottom: 1px solid var(--border);
+}
+
+h1 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#tab-count,
+#status {
+  color: var(--muted);
+}
+
+main {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-color: var(--muted) transparent;
+}
+
+#tab-list {
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+}
+
+.tab-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 32px;
+  padding: 5px 12px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: default;
+}
+
+.tab-button:hover,
+.tab-button:focus-visible {
+  background: var(--hover);
+  outline: none;
+}
+
+.tab-button[aria-current="true"] {
+  background: var(--active);
+}
+
+.tab-button[aria-current="true"]::before {
+  position: absolute;
+  inset: 5px auto 5px 0;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--active-accent);
+  content: "";
+}
+
+.favicon {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.favicon-fallback {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--border);
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.tab-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#status {
+  margin: 0;
+  padding: 12px;
+  text-align: center;
+}
+
+#status[hidden] {
+  display: none;
+}
