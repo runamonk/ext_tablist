@@ -8,6 +8,7 @@ A small Manifest V3 extension for Chrome and Edge. Clicking its toolbar button l
 - Speaker indicator for tabs playing audio and crossed-speaker indicator for muted tabs; click it to mute or unmute
 - Click a row to switch to that tab
 - Middle-click a row to close that tab
+- Automatically closes when the popup loses focus
 - Scrollable popup capped at 80% of the viewport
 - Automatic light and dark appearance based on the browser/system color preference
 

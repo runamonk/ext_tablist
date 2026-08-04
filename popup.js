@@ -2,6 +2,8 @@ const tabList = document.querySelector("#tab-list");
 const tabCount = document.querySelector("#tab-count");
 const status = document.querySelector("#status");
 
+window.addEventListener("blur", () => window.close());
+
 // Popup CSS cannot reliably size against the physical screen viewport, so set
 // explicit limits before rendering. Browser-enforced popup limits still apply.
 document.documentElement.style.setProperty(
