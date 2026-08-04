@@ -38,6 +38,30 @@ function makeFavicon(tab) {
   return image;
 }
 
+function makeAudioIndicator(tab) {
+  if (!tab.audible && !tab.mutedInfo?.muted) return null;
+
+  const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  icon.setAttribute("class", "audio-indicator");
+  icon.setAttribute("viewBox", "0 0 20 20");
+  icon.setAttribute("aria-label", tab.mutedInfo?.muted ? "Tab is muted" : "Tab is playing audio");
+  icon.setAttribute("role", "img");
+
+  const speaker = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  speaker.setAttribute("d", "M3 8v4h3l4 3V5L6 8H3z");
+  icon.append(speaker);
+
+  const detail = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  if (tab.mutedInfo?.muted) {
+    detail.setAttribute("d", "m13 8 4 4m0-4-4 4");
+  } else {
+    detail.setAttribute("d", "M13 7.2a4 4 0 0 1 0 5.6m2-7.6a7 7 0 0 1 0 9.6");
+  }
+  detail.setAttribute("class", "audio-detail");
+  icon.append(detail);
+  return icon;
+}
+
 function makeTabItem(tab) {
   const item = document.createElement("li");
   const button = document.createElement("button");
@@ -53,6 +77,8 @@ function makeTabItem(tab) {
   title.textContent = tab.title || tab.url || "Untitled tab";
 
   button.append(makeFavicon(tab), title);
+  const audioIndicator = makeAudioIndicator(tab);
+  if (audioIndicator) button.append(audioIndicator);
   item.append(button);
   return item;
 }

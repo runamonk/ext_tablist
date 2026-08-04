@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Current Window Tab List",
+  "name": "Tab List",
   "version": "1.0.0",
   "description": "Shows a compact list of tabs in the current browser window.",
   "permissions": ["tabs"],
