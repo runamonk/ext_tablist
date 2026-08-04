@@ -5,7 +5,7 @@ A small Manifest V3 extension for Chrome and Edge. Clicking its toolbar button l
 ## Features
 
 - Compact favicon-and-title list
-- Speaker indicator for tabs playing audio and crossed-speaker indicator for muted tabs
+- Speaker indicator for tabs playing audio and crossed-speaker indicator for muted tabs; click it to mute or unmute
 - Click a row to switch to that tab
 - Middle-click a row to close that tab
 - Scrollable popup capped at 80% of the viewport

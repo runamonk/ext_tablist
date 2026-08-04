@@ -46,6 +46,7 @@ function makeAudioIndicator(tab) {
   icon.setAttribute("viewBox", "0 0 20 20");
   icon.setAttribute("aria-label", tab.mutedInfo?.muted ? "Tab is muted" : "Tab is playing audio");
   icon.setAttribute("role", "img");
+  icon.dataset.muted = String(Boolean(tab.mutedInfo?.muted));
 
   const speaker = document.createElementNS("http://www.w3.org/2000/svg", "path");
   speaker.setAttribute("d", "M3 8v4h3l4 3V5L6 8H3z");
@@ -88,6 +89,19 @@ tabList.addEventListener("click", async (event) => {
   if (!button) return;
 
   try {
+    const audioIndicator = event.target.closest(".audio-indicator");
+    if (audioIndicator) {
+      const muted = audioIndicator.dataset.muted === "true";
+      await chrome.tabs.update(Number(button.dataset.tabId), { muted: !muted });
+      audioIndicator.dataset.muted = String(!muted);
+      audioIndicator.setAttribute("aria-label", !muted ? "Tab is muted" : "Tab is playing audio");
+      audioIndicator.querySelector(".audio-detail").setAttribute(
+        "d",
+        !muted ? "m13 8 4 4m0-4-4 4" : "M13 7.2a4 4 0 0 1 0 5.6m2-7.6a7 7 0 0 1 0 9.6"
+      );
+      return;
+    }
+
     await chrome.tabs.update(Number(button.dataset.tabId), { active: true });
     window.close();
   } catch (error) {

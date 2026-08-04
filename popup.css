@@ -141,6 +141,11 @@ main {
   height: 18px;
   fill: currentColor;
   color: var(--muted);
+  cursor: pointer;
+}
+
+.audio-indicator:hover {
+  color: var(--foreground);
 }
 
 .audio-detail {
