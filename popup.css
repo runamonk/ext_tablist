@@ -9,6 +9,7 @@
   --active-accent: #1a73e8;
   --popup-width: 420px;
   --popup-max-height: 480px;
+  --header-height: 35px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -45,6 +46,7 @@ body {
 }
 
 header {
+  flex: 0 0 var(--header-height);
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -66,6 +68,7 @@ h1 {
 main {
   flex: 1;
   min-height: 0;
+  max-height: calc(var(--popup-max-height) - var(--header-height));
   overflow-y: auto;
   scrollbar-color: var(--muted) transparent;
 }

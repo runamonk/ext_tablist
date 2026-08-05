@@ -12,7 +12,7 @@ document.documentElement.style.setProperty(
 );
 document.documentElement.style.setProperty(
   "--popup-max-height",
-  `${Math.max(240, Math.floor(screen.availHeight * 0.8))}px`
+  `${Math.max(240, Math.min(600, Math.floor(screen.availHeight * 0.8)))}px`
 );
 
 function makeFavicon(tab) {
