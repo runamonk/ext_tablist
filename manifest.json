@@ -4,6 +4,9 @@
   "version": "1.0.0",
   "description": "Shows a compact list of tabs in the current browser window.",
   "permissions": ["tabs"],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
     "default_title": "List tabs in this window",
     "default_popup": "popup.html"

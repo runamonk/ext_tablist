@@ -1,8 +1,21 @@
 const tabList = document.querySelector("#tab-list");
 const tabCount = document.querySelector("#tab-count");
 const status = document.querySelector("#status");
+const closeQueue = chrome.runtime.connect({ name: "tab-close-queue" });
+
+// Messages keep the worker alive while this popup owns a pending queue.
+const queueHeartbeat = setInterval(() => {
+  closeQueue.postMessage({ type: "keep-alive" });
+}, 20_000);
+closeQueue.onDisconnect.addListener(() => {
+  clearInterval(queueHeartbeat);
+  showError(chrome.runtime.lastError || new Error("Tab close queue disconnected. Reopen the tab list."));
+});
 
 window.addEventListener("blur", () => window.close());
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") window.close();
+});
 
 // Popup CSS cannot reliably size against the physical screen viewport, so set
 // explicit limits before rendering. Browser-enforced popup limits still apply.
@@ -111,14 +124,22 @@ tabList.addEventListener("click", async (event) => {
   }
 });
 
-tabList.addEventListener("auxclick", async (event) => {
+// Prevent middle-button autoscroll from starting when the list is scrollable.
+// The tab is queued by the auxclick handler after the button is released.
+tabList.addEventListener("mousedown", (event) => {
+  if (event.button === 1 && event.target.closest(".tab-button")) {
+    event.preventDefault();
+  }
+});
+
+tabList.addEventListener("auxclick", (event) => {
   if (event.button !== 1) return;
   const button = event.target.closest(".tab-button");
   if (!button) return;
 
   event.preventDefault();
   try {
-    await chrome.tabs.remove(Number(button.dataset.tabId));
+    closeQueue.postMessage({ type: "queue-close", tabId: Number(button.dataset.tabId) });
     button.closest("li").remove();
     updateCount();
   } catch (error) {
