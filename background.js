@@ -6,6 +6,8 @@ chrome.runtime.onConnect.addListener((port) => {
   port.onMessage.addListener((message) => {
     if (message.type === "queue-close" && Number.isInteger(message.tabId) && message.tabId >= 0) {
       pendingTabIds.add(message.tabId);
+    } else if (message.type === "cancel-close") {
+      pendingTabIds.delete(message.tabId);
     }
   });
 

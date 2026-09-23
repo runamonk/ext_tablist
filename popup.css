@@ -147,6 +147,14 @@ main {
   cursor: pointer;
 }
 
+.tab-button.queued-close > * {
+  opacity: 0.5;
+}
+
+.tab-button.queued-close .tab-title {
+  text-decoration: line-through;
+}
+
 .audio-indicator:hover {
   color: var(--foreground);
 }

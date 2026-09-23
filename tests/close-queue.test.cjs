@@ -64,7 +64,8 @@ test("popup queues are independent, including empty dismissals", () => {
   assert.deepEqual(removed, [1, 2]);
 });
 
-test("middle-click removes the row and updates the count before any browser tab closes", async () => {
+for (const undo of [null, "click", "auxclick"]) {
+test(`queued row stays visible; undo via ${undo || "no undo"}`, async () => {
   const { chrome, removed, connect } = setup();
   const port = connect();
   chrome.runtime.connect = () => port;
@@ -91,11 +92,36 @@ test("middle-click removes the row and updates the count before any browser tab 
   list.childElementCount = 1;
   const button = {
     dataset: { tabId: "42" },
-    closest: () => ({ remove() { list.childElementCount--; } })
+    classList: { toggle(name, value) { button.queued = value; } },
+    querySelector: () => ({ textContent: "Example tab" }),
+    setAttribute(name, value) { this[name] = value; },
+    removeAttribute(name) { delete this[name]; }
   };
-  handlers.auxclick({ button: 1, target: { closest: () => button }, preventDefault() {} });
-  assert.equal(list.childElementCount, 0);
-  assert.equal(count.textContent, "0 tabs");
+  const clickEvent = { button: 1, target: { closest: () => button }, preventDefault() {} };
+  handlers.auxclick(clickEvent);
+  assert.equal(list.childElementCount, 1);
+  assert.equal(button.queued, true);
+  assert.match(button["aria-label"], /Queued to close/);
+  assert.equal(count.textContent, "1 tab · 1 queued");
+  if (undo) {
+    await handlers[undo](clickEvent);
+    assert.equal(button.queued, false);
+    assert.equal(button.title, "Example tab");
+    assert.equal(button["aria-label"], undefined);
+    assert.equal(count.textContent, "1 tab");
+  }
+  assert.deepEqual(removed, []);
+  port.onDisconnect.fire();
+  assert.deepEqual(removed, undo ? [] : [42]);
+});
+}
+
+test("cancelled tabs can be queued again before dismissal", () => {
+  const { removed, connect } = setup();
+  const port = connect();
+  for (const type of ["queue-close", "cancel-close", "queue-close"]) {
+    port.postMessage({ type, tabId: 42 });
+  }
   assert.deepEqual(removed, []);
   port.onDisconnect.fire();
   assert.deepEqual(removed, [42]);

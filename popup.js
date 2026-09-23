@@ -1,6 +1,7 @@
 const tabList = document.querySelector("#tab-list");
 const tabCount = document.querySelector("#tab-count");
 const status = document.querySelector("#status");
+const pendingTabIds = new Set();
 const closeQueue = chrome.runtime.connect({ name: "tab-close-queue" });
 
 // Messages keep the worker alive while this popup owns a pending queue.
@@ -104,6 +105,10 @@ tabList.addEventListener("click", async (event) => {
   if (!button) return;
 
   try {
+    if (pendingTabIds.has(Number(button.dataset.tabId))) {
+      setQueued(button, false);
+      return;
+    }
     const audioIndicator = event.target.closest(".audio-indicator");
     if (audioIndicator) {
       const muted = audioIndicator.dataset.muted === "true";
@@ -139,17 +144,29 @@ tabList.addEventListener("auxclick", (event) => {
 
   event.preventDefault();
   try {
-    closeQueue.postMessage({ type: "queue-close", tabId: Number(button.dataset.tabId) });
-    button.closest("li").remove();
-    updateCount();
+    setQueued(button, !pendingTabIds.has(Number(button.dataset.tabId)));
   } catch (error) {
     showError(error);
   }
 });
 
+function setQueued(button, queued) {
+  const tabId = Number(button.dataset.tabId);
+  closeQueue.postMessage({ type: queued ? "queue-close" : "cancel-close", tabId });
+  if (queued) pendingTabIds.add(tabId);
+  else pendingTabIds.delete(tabId);
+  button.classList.toggle("queued-close", queued);
+  const title = button.querySelector(".tab-title").textContent;
+  button.title = queued ? `${title} — Queued to close. Click to undo.` : title;
+  if (queued) button.setAttribute("aria-label", button.title);
+  else button.removeAttribute("aria-label");
+  updateCount();
+}
+
 function updateCount() {
   const count = tabList.childElementCount;
   tabCount.textContent = `${count} ${count === 1 ? "tab" : "tabs"}`;
+  if (pendingTabIds.size) tabCount.textContent += ` · ${pendingTabIds.size} queued`;
   if (count === 0) {
     status.textContent = "No tabs in this window.";
     status.hidden = false;
